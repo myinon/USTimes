@@ -14,3 +14,5 @@ Each time zone is shown on its own row with a time spinner that can be edited in
 This program includes a button to reset to the current time. It will also highlight the time zone that you currently reside in with the color red.
 
 #### Screenshot
+
+![alt text](./US Time Zones Clock.png "Main Application Window")
