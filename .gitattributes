@@ -1,0 +1,6 @@
+*.java text eol=crlf
+*.prefs text eol=crlf
+*.classpath text eol=crlf
+*.project text eol=crlf
+*.png  binary
+*.ico  binary
