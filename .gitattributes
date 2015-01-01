@@ -1,3 +1,5 @@
+*.c text eol=crlf
+*.rc text eol=crlf
 *.java text eol=crlf
 *.prefs text eol=crlf
 *.classpath text eol=crlf
