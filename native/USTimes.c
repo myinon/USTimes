@@ -44,11 +44,11 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	uSize++;
 	
 	if (lstrcpynW(classPath + uSize,
-	L"\\javaw.exe\" -version:1.7* -jar ", 32) == NULL) {
+	L"\\javaw.exe\" -jar ", 18) == NULL) {
 		displayError(L"Could not copy javaw.exe to path.");
 		return 2;
 	}
-	uSize += 32;
+	uSize += 18;
 	
 	classPath[uSize - 1] = L'\"';
 	jarPath = ((LPWSTR) classPath) + uSize;

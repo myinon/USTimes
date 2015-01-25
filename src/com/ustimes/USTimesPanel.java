@@ -76,6 +76,78 @@ public class USTimesPanel extends JPanel implements ActionListener, ChangeListen
 		configureSpinner("US/Mountain", 2, 0, 1, 3);
 		configureSpinner("US/Pacific", 3, 0, 1, 2);
 		
+		// Limit zoneMap to just United States time zones
+		/* Start of Eastern Time */
+		zoneMap.put("America/Detroit", "US/Eastern");
+		zoneMap.put("America/Fort_Wayne", "US/Eastern");
+		zoneMap.put("America/Indiana/Indianapolis", "US/Eastern");
+		zoneMap.put("America/Indiana/Marengo", "US/Eastern");
+		zoneMap.put("America/Indiana/Petersburg", "US/Eastern");
+		zoneMap.put("America/Indiana/Vevay", "US/Eastern");
+		zoneMap.put("America/Indiana/Vincennes", "US/Eastern");
+		zoneMap.put("America/Indiana/Winamac", "US/Eastern");
+		zoneMap.put("America/Indianapolis", "US/Eastern");
+		zoneMap.put("America/Kentucky/Louisville", "US/Eastern");
+		zoneMap.put("America/Kentucky/Monticello", "US/Eastern");
+		zoneMap.put("America/Louisville", "US/Eastern");
+		zoneMap.put("America/New_York", "US/Eastern");
+		zoneMap.put("EST", "US/Eastern");
+		zoneMap.put("EST5EDT", "US/Eastern");
+		zoneMap.put("Etc/GMT+5", "US/Eastern");
+		zoneMap.put("IET", "US/Eastern");
+		zoneMap.put("SystemV/EST5", "US/Eastern");
+		zoneMap.put("SystemV/EST5EDT", "US/Eastern");
+		zoneMap.put("US/East-Indiana", "US/Eastern");
+		zoneMap.put("US/Eastern", "US/Eastern");
+		zoneMap.put("US/Michigan", "US/Eastern");
+		/* End of Eastern Time */
+		
+		/* Start of Central Time */
+		zoneMap.put("America/Chicago", "US/Central");
+		zoneMap.put("America/Indiana/Knox", "US/Central");
+		zoneMap.put("America/Indiana/Tell_City", "US/Central");
+		zoneMap.put("America/Knox_IN", "US/Central");
+		zoneMap.put("America/Menominee", "US/Central");
+		zoneMap.put("America/North_Dakota/Beulah", "US/Central");
+		zoneMap.put("America/North_Dakota/Center", "US/Central");
+		zoneMap.put("America/North_Dakota/New_Salem", "US/Central");
+		zoneMap.put("CST", "US/Central");
+		zoneMap.put("CST6CDT", "US/Central");
+		zoneMap.put("Etc/GMT+6", "US/Central");
+		zoneMap.put("SystemV/CST6", "US/Central");
+		zoneMap.put("SystemV/CST6CDT", "US/Central");
+		zoneMap.put("US/Central", "US/Central");
+		zoneMap.put("US/Indiana-Starke", "US/Central");
+		/* End of Central Time */
+		
+		/* Start of Mountain Time */
+		zoneMap.put("America/Boise", "US/Mountain");
+		zoneMap.put("America/Denver", "US/Mountain");
+		zoneMap.put("America/Phoenix", "US/Mountain");
+		zoneMap.put("America/Shiprock", "US/Mountain");
+		zoneMap.put("Etc/GMT+7", "US/Mountain");
+		zoneMap.put("MST", "US/Mountain");
+		zoneMap.put("MST7MDT", "US/Mountain");
+		zoneMap.put("Navajo", "US/Mountain");
+		zoneMap.put("PNT", "US/Mountain");
+		zoneMap.put("SystemV/MST7", "US/Mountain");
+		zoneMap.put("SystemV/MST7MDT", "US/Mountain");
+		zoneMap.put("US/Arizona", "US/Mountain");
+		zoneMap.put("US/Mountain", "US/Mountain");
+		/* End of Mountain Time */
+		
+		/* Start of Pacific Time */
+		zoneMap.put("America/Los_Angeles", "US/Pacific");
+		zoneMap.put("America/Metlakatla", "US/Pacific");
+		zoneMap.put("Etc/GMT+8", "US/Pacific");
+		zoneMap.put("PST", "US/Pacific");
+		zoneMap.put("PST8PDT", "US/Pacific");
+		zoneMap.put("SystemV/PST8", "US/Pacific");
+		zoneMap.put("SystemV/PST8PDT", "US/Pacific");
+		zoneMap.put("US/Pacific", "US/Pacific");
+		zoneMap.put("US/Pacific-New", "US/Pacific");
+		/* End of Pacific Time */
+		
 		resetToCurrent = new JButton("Reset to current time");
 		resetToCurrent.setMnemonic(KeyEvent.VK_R);
 		resetToCurrent.setRequestFocusEnabled(false);
@@ -107,10 +179,11 @@ public class USTimesPanel extends JPanel implements ActionListener, ChangeListen
 		format.setTimeZone(TimeZone.getTimeZone(zone));
 		
 		// Match specific zone to a broader zone
-		String[] ids = TimeZone.getAvailableIDs(format.getTimeZone().getRawOffset());
+		// Removed in order to limit to just United States time zones
+		/*String[] ids = TimeZone.getAvailableIDs(format.getTimeZone().getRawOffset());
 		for (String id : ids) {
 			zoneMap.put(id, zone);
-		}
+		}*/
 		
 		// Change behavior of the editor
 		DateFormatter formatter = (DateFormatter) ((JSpinner.DateEditor) temp.getEditor()).getTextField().getFormatter();

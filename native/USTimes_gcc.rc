@@ -16,8 +16,8 @@ IDI_MAIN ICON "Clock-Business_101-Gregor_Cresnar.ico"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,0
- PRODUCTVERSION 1,0,0,0
+ FILEVERSION 1,0,2,0
+ PRODUCTVERSION 1,0,2,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -34,12 +34,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Win32 C Studio"
             VALUE "FileDescription", "US Time Zones Clock"
-            VALUE "FileVersion", "1.0.0.0"
+            VALUE "FileVersion", "1.0.2.0"
             VALUE "InternalName", "USTimes"
             VALUE "LegalCopyright", "Copyright (C) 2015"
             VALUE "OriginalFilename", "ustimes.exe"
             VALUE "ProductName", "US Time Zones Clock (32-bit)"
-            VALUE "ProductVersion", "1.0.0.0"
+            VALUE "ProductVersion", "1.0.2.0"
         END
     END
     BLOCK "VarFileInfo"
