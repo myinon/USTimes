@@ -15,9 +15,9 @@ void __stdcall displayError(LPCWSTR msg) {
 		BOOL bGood = WriteConsoleW(
 			err, (const void *) msg, nNumberOfCharsToWrite, &lpNumberOfCharsWritten, NULL);
 		if ((bGood == TRUE) && (nNumberOfCharsToWrite == lpNumberOfCharsWritten)) {
-			nNumberOfCharsToWrite = 2;
+			nNumberOfCharsToWrite = 1;
 			lpNumberOfCharsWritten = 0;
-			WriteConsoleW(err, (const void *) L"\r\n", nNumberOfCharsToWrite, &lpNumberOfCharsWritten, NULL);
+			WriteConsoleW(err, (const void *) L"\n", nNumberOfCharsToWrite, &lpNumberOfCharsWritten, NULL);
 		}
 	}
 }
@@ -30,33 +30,99 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	LPWSTR jarPath;
 	LPWSTR *argv;
 	SIZE_T COUNT = ((2 * MAX_PATH) + 31);
+	HKEY hKey;
+	HKEY hJre;
+	LONG lError;
+	DWORD lpType;
+	DWORD lpcbData;
+	LPBYTE version;
 	DWORD len;
 	UINT uSize;
 	int argc;
 	
 	ZeroMemory(classPath, sizeof(classPath));
 	classPath[0] = L'\"';
-	uSize = GetSystemDirectoryW(classPath + 1, ((UINT) COUNT) - 1);
+	
+	lError = RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\JavaSoft\\Java Runtime Environment",
+		0, KEY_READ, &hKey);
+	if (lError != ERROR_SUCCESS) {
+		displayError(L"Can't read Java registry information.");
+		return 1;
+	}
+	
+	lError = RegQueryValueExW(hKey, L"CurrentVersion", NULL, &lpType, NULL, &lpcbData);
+	if ((lError != ERROR_SUCCESS) || (lpType != REG_SZ)) {
+		RegCloseKey(hKey);
+		displayError(L"Can't get Java version information.");
+		return 2;
+	}
+	
+	lpcbData += 1;
+	version = (LPBYTE) HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, (SIZE_T) lpcbData);
+	if (version == NULL) {
+		RegCloseKey(hKey);
+		displayError(L"Out of memory.");
+		return 3;
+	}
+	
+	lError = RegQueryValueExW(hKey, L"CurrentVersion", NULL, &lpType, version, &lpcbData);
+	if (lError != ERROR_SUCCESS) {
+		RegCloseKey(hKey);
+		displayError(L"Can't read Java version information.");
+		return 4;
+	}
+	
+	if (lstrcmpiW((LPWSTR) version, L"1.7") < 0) {
+		HeapFree(GetProcessHeap(), 0, (LPVOID) version);
+		RegCloseKey(hKey);
+		displayError(L"Java version 1.7 or higher is required.");
+		return 5;
+	}
+	
+	lError = RegOpenKeyExW(hKey, (LPWSTR) version, 0, KEY_READ, &hJre);
+	if (lError != ERROR_SUCCESS) {
+		HeapFree(GetProcessHeap(), 0, (LPVOID) version);
+		RegCloseKey(hKey);
+		displayError(L"Can't find Java version information.");
+		return 6;
+	}
+	
+	HeapFree(GetProcessHeap(), 0, (LPVOID) version);
+	RegCloseKey(hKey);
+	lpcbData = (DWORD) (COUNT - 1);
+	
+	lError = RegQueryValueExW(hJre, L"JavaHome", NULL, &lpType, (LPBYTE) (classPath + 1), &lpcbData);
+	if ((lError != ERROR_SUCCESS) || (lpType != REG_SZ)) {
+		RegCloseKey(hJre);
+		displayError(L"Can't read Java path information.");
+		return 7;
+	}
+	
+	RegCloseKey(hJre);
+	
+	/*uSize = GetSystemDirectoryW(classPath + 1, ((UINT) COUNT) - 1);
 	if (uSize > (COUNT - 1)) {
 		displayError(L"System directory path name is too long.");
 		return 1;
-	}
-	uSize++;
+	}*/
+	uSize = lstrlenW(classPath);
+	//uSize++; // Initial quote character
 	
 	if (lstrcpynW(classPath + uSize,
-	L"\\javaw.exe\" -jar ", 18) == NULL) {
+	L"\\bin\\javaw.exe\" -jar ", 22) == NULL) {
 		displayError(L"Could not copy javaw.exe to path.");
-		return 2;
+		return 8;
 	}
-	uSize += 18;
+	uSize += 22;
 	
 	classPath[uSize - 1] = L'\"';
 	jarPath = ((LPWSTR) classPath) + uSize;
 	len = GetModuleFileNameW(NULL, jarPath, ((DWORD) COUNT) - uSize);
 	if (len == 0 || len >= (COUNT - uSize)) {
 		displayError(L"Could not get module name.");
-		return 3;
+		return 9;
 	}
+	classPath[len + uSize] = L'\"';
 	
 	jarPath = classPath;
 	argv = CommandLineToArgvW(GetCommandLineW(), &argc);
@@ -76,14 +142,14 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 				(SIZE_T) ((len + 1) * sizeof(WCHAR)));
 			if (str == NULL) {
 				displayError(L"Can't create command line arguments.");
-				return 4;
+				return 10;
 			}
 			
 			if (lstrcatW(str, (LPWSTR) classPath) == NULL) {
 				HeapFree(GetProcessHeap(), 0, (LPVOID) str);
 				LocalFree((HLOCAL) argv);
 				displayError(L"Can't copy command line arguments.");
-				return 5;
+				return 11;
 			}
 			
 			for (i = 1; i < argc; i++) {
@@ -91,21 +157,21 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 					HeapFree(GetProcessHeap(), 0, (LPVOID) str);
 					LocalFree((HLOCAL) argv);
 					displayError(L"Can't copy command line arguments.");
-					return 6;
+					return 12;
 				}
 				
 				if (lstrcatW(str, argv[i]) == NULL) {
 					HeapFree(GetProcessHeap(), 0, (LPVOID) str);
 					LocalFree((HLOCAL) argv);
 					displayError(L"Can't copy command line arguments.");
-					return 7;
+					return 13;
 				}
 				
 				if (lstrcatW(str, L"\"") == NULL) {
 					HeapFree(GetProcessHeap(), 0, (LPVOID) str);
 					LocalFree((HLOCAL) argv);
 					displayError(L"Can't copy command line arguments.");
-					return 8;
+					return 14;
 				}
 			}
 			jarPath = str;
@@ -126,7 +192,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		if (jarPath != classPath)
 			HeapFree(GetProcessHeap(), 0, (LPVOID) jarPath);
 		displayError(L"Could not create java process.");
-		return 9;
+		return 15;
 	} else {
 		CloseHandle(process.hThread);
 		CloseHandle(process.hProcess);
