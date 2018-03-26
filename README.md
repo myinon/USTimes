@@ -15,4 +15,4 @@ This program includes a button to reset to the current time. It will also highli
 
 #### Screenshot
 
-![alt text](./US Time Zones Clock.png "Main Application Window")
+![Main Application Window](US%20Time%20Zones%20Clock.png)
